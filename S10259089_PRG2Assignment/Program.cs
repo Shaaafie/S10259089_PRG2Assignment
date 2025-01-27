@@ -68,17 +68,4 @@ namespace PRG2_assignment
         }
     }
 
-    public class Flight
-    {
-        public string FlightNumber { get; set; }
-        public string Origin { get; set; }
-        public string Destination { get; set; }
-        public DateTime ExpectedTime { get; set; }
-        public string Status { get; set; }
-
-        public override string ToString()
-        {
-            return $"Flight {FlightNumber} from {Origin} to {Destination} at {ExpectedTime}. Status: {Status}";
-        }
-    }
 }

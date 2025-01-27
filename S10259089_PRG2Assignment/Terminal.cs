@@ -46,7 +46,13 @@ namespace S10259089_PRG2Assignment
             foreach (var airline in Airlines.Values)
             {
                 double totalFees = airline.CalculateTotalFees();
-                double totalDiscounts = airline.CalculateDiscounts();
+                double totalDiscounts = 0;
+
+                foreach (var flight in airline.Flights.Values)
+                {
+                    totalDiscounts += airline.CalculateDiscounts(flight);
+                }
+
                 Console.WriteLine($"{airline.Name}: Total Fees = {totalFees:C}, Discounts = {totalDiscounts:C}, Final Bill = {totalFees - totalDiscounts:C}");
             }
         }
