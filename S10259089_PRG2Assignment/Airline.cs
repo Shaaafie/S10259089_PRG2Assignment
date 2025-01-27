@@ -14,7 +14,7 @@ namespace S10259089_PRG2Assignment
         {
             return false;
         }
-        public double CalculateTotalFees()
+        public double CalculateTotalFees() 
         {
             return Flights.Values.Sum(f => f.CalculateFees());
         }
@@ -51,3 +51,4 @@ namespace S10259089_PRG2Assignment
         }
     }
 }
+//hi
