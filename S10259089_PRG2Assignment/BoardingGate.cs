@@ -9,7 +9,7 @@ namespace S10259089_PRG2Assignment
     class BoardingGate
     {
         public string GateName { get; set; }
-        public bool SupportsCTTF { get; set; }
+        public bool SupportsCFFT { get; set; }
         public bool SupportsDDJB { get; set; }
         public bool SupportsLWTT { get; set; }
         public Flight Flight { get; set; }
@@ -19,8 +19,11 @@ namespace S10259089_PRG2Assignment
         }
         public string ToString()
         {
-            return "Gate: " + GateName +
-                "Flight: " + Flight != null ? Flight.FlightNumber : "None";
+            return $"GateName: {GateName}, " +
+               $"CFFT: {SupportsCFFT}, " +
+               $"DDJB: {SupportsDDJB}, " +
+               $"LWTT: {SupportsLWTT}, " +
+               $"Flight: {(Flight != null ? Flight.ToString() : "No Flight Assigned")}";
         }
     }
 }
