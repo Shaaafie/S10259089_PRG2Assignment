@@ -1,4 +1,10 @@
-﻿using System;
+﻿//==========================================================
+// Student Number : S10259089
+// Student Name : Nur Shafana Binte Mohd Saktar
+// Partner Name : He Zhao Jin
+//==========================================================
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
