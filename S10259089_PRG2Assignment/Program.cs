@@ -152,6 +152,13 @@ namespace PRG2_assignment
             {
                 Console.WriteLine("The file doesn't exist.");
             }
+
+            //basic feature 3 (reference to Terminal.cs)
+            // Create Terminal object and call the new method
+            Terminal terminal = new Terminal();  
+            terminal.AssignBoardingGate();  
+
+
         }
 
     }

@@ -63,6 +63,63 @@ namespace S10259089_PRG2Assignment
             }
         }
 
+        //feature 3 : Assign a boarding gate to a flight
+        public void AssignBoardingGate()
+        {
+            // Prompt for Flight Number
+            Console.Write("Enter Flight Number: ");
+            string flightNumber = Console.ReadLine();
+
+            // Check if Flight exists in the dictionary
+            if (!Flights.ContainsKey(flightNumber))
+            {
+                Console.WriteLine("Flight not found. Please enter a valid Flight Number.");
+                return;
+            }
+
+            Flight flight = Flights[flightNumber]; // Retrieve Flight object
+            Console.WriteLine($"Selected Flight: {flight.FlightNumber}, Destination: {flight.Destination}");
+
+            // Prompt for Boarding Gate
+            Console.Write("Enter Boarding Gate: ");
+            string gateName = Console.ReadLine();
+
+            // Check if Boarding Gate exists
+            if (!BoardingGates.ContainsKey(gateName))
+            {
+                Console.WriteLine("Boarding Gate not found. Please enter a valid Gate.");
+                return;
+            }
+
+            BoardingGate gate = BoardingGates[gateName]; // Retrieve Boarding Gate object
+
+            // Check if the Gate is already assigned to another Flight
+            if (gate.Flight != null)
+            {
+                Console.WriteLine("This gate is already assigned to another flight. Please choose another gate.");
+                return;
+            }
+
+            // Assign the Flight to the Gate
+            gate.Flight = flight;
+            Console.WriteLine($"Successfully assigned {flight.FlightNumber} to gate {gate.GateName}!");
+
+            // Prompt to update Flight Status
+            Console.Write("Would you like to update the Flight Status? (Y/N): ");
+            string updateStatus = Console.ReadLine().Trim().ToUpper();
+
+            if (updateStatus == "Y")
+            {
+                Console.WriteLine("Enter new Status (Delayed/Boarding/On Time): ");
+                string status = Console.ReadLine();
+                flight.Status = status;
+                Console.WriteLine($"Flight {flight.FlightNumber} status updated to {flight.Status}.");
+            }
+        }
+
+
+
+
         public override string ToString()
         {
             return "Terminal: " + TerminalName +
