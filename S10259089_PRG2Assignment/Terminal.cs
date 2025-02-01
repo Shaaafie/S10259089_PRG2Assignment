@@ -117,7 +117,65 @@ namespace S10259089_PRG2Assignment
             }
         }
 
+        //featue 5
+        public void AssignBoardingGate(Dictionary<string, Flight> flights, Dictionary<string, BoardingGate> boardingGates)
+        {
 
+            Console.Write("Enter the flight number: ");
+            string flightNumber = Console.ReadLine().Trim();
+
+        
+            if (!flights.ContainsKey(flightNumber))
+            {
+                Console.WriteLine("Flight not found.");
+                return;
+            }
+
+
+            Flight flight = flights[flightNumber];
+            Console.WriteLine($"Flight Details: {flight}");
+
+
+            Console.Write("Enter the boarding gate: ");
+            string gateName = Console.ReadLine().Trim();
+
+
+            if (!boardingGates.ContainsKey(gateName))
+            {
+                Console.WriteLine("Boarding gate not found.");
+                return;
+            }
+
+            BoardingGate gate = boardingGates[gateName];
+
+   
+            if (gate.Flight != null)
+            {
+                Console.WriteLine("This boarding gate is already assigned to another flight.");
+                return;
+            }
+
+            gate.Flight = flight;
+            Console.WriteLine($"Boarding gate {gateName} assigned to flight {flightNumber}.");
+
+
+            Console.Write("Do you want to update the flight status? (Y/N): ");
+            string updateStatus = Console.ReadLine().Trim().ToUpper();
+
+            if (updateStatus == "Y")
+            {
+                Console.Write("Enter the new status (Delayed, Boarding, On Time): ");
+                string newStatus = Console.ReadLine().Trim();
+                flight.Status = newStatus;
+                Console.WriteLine($"Flight status updated to {newStatus}.");
+            }
+            else
+            {
+                flight.Status = "On Time"; 
+            }
+
+            Console.WriteLine("Boarding gate assignment completed successfully.");
+        }
 
 
         public override string ToString()
