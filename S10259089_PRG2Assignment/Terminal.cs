@@ -117,7 +117,7 @@ namespace S10259089_PRG2Assignment
             }
         }
 
-        //featue 5
+        //basic featue 5
         public void AssignBoardingGate(Dictionary<string, Flight> flights, Dictionary<string, BoardingGate> boardingGates)
         {
 
@@ -175,6 +175,52 @@ namespace S10259089_PRG2Assignment
             }
 
             Console.WriteLine("Boarding gate assignment completed successfully.");
+        }
+
+        //basic feature 6:create a new flight
+        public void CreateNewFlight(Dictionary<string, Flight> flights, string flightsPath)
+        {
+  
+            Console.Write("Enter flight number: ");
+            string flightNumber = Console.ReadLine().Trim();
+
+
+            if (flights.ContainsKey(flightNumber))
+            {
+                Console.WriteLine("Flight already exists.");
+                return;
+            }
+
+            Console.Write("Enter origin: ");
+            string origin = Console.ReadLine().Trim();
+
+            Console.Write("Enter destination: ");
+            string destination = Console.ReadLine().Trim();
+
+            Console.Write("Enter expected departure/arrival time (yyyy-MM-dd HH:mm): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime expectedTime))
+            {
+                Console.WriteLine("Invalid date format.");
+                return;
+            }
+
+
+            Flight newFlight = new Flight
+            {
+                FlightNumber = flightNumber,
+                Origin = origin,
+                Destination = destination,
+                ExpectedTime = expectedTime,
+                Status = "On Time" 
+            };
+
+            flights.Add(flightNumber, newFlight);
+
+ 
+            string newFlightLine = $"{flightNumber},{origin},{destination},{expectedTime:yyyy-MM-dd HH:mm},{newFlight.Status}";
+            File.AppendAllText(flightsPath, Environment.NewLine + newFlightLine);
+
+            Console.WriteLine("New flight created and added successfully.");
         }
 
 
