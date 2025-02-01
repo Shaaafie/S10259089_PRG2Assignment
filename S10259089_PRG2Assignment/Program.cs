@@ -161,6 +161,8 @@ namespace PRG2_assignment
             //basic feature 5 (reference to Terminal.cs)
             terminal.AssignBoardingGate(flights, boardingGates);
 
+            //basic feature 6: create new flight
+            terminal.CreateNewFlight(flights, path);
         }
 
     }
