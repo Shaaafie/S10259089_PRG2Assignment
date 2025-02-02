@@ -16,146 +16,133 @@ namespace S10259089_PRG2Assignment
     {
         static void Main(string[] args)
         {
-            // Basic Feature 1: Dictionaries to store airlines and boarding gates
+            // Initialize dictionaries
             Dictionary<string, Airline> airlines = new();
             Dictionary<string, BoardingGate> boardingGates = new();
-
-            // Load airlines from CSV
-            string airlinesPath = "airlines.csv";
-            if (File.Exists(airlinesPath))
-            {
-                Console.WriteLine("Loading airlines...");
-                var airlineLines = File.ReadAllLines(airlinesPath);
-
-                for (int i = 1; i < airlineLines.Length; i++)
-                {
-                    string[] fields = airlineLines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
-
-                    if (fields.Length < 2)
-                    {
-                        Console.WriteLine($"Skipping invalid line: {airlineLines[i]}");
-                        continue;
-                    }
-
-                    string code = fields[0];
-                    string name = fields[1];
-
-                    if (!airlines.ContainsKey(code))
-                    {
-                        airlines[code] = new Airline { Code = code, Name = name };
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Airlines file not found.");
-            }
-
-            // Load boarding gates from CSV
-            string gatesPath = "boardinggates.csv";
-            if (File.Exists(gatesPath))
-            {
-                Console.WriteLine("Loading boarding gates...");
-                var gateLines = File.ReadAllLines(gatesPath);
-
-                for (int i = 1; i < gateLines.Length; i++)
-                {
-                    string[] fields = gateLines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
-
-                    if (fields.Length < 4)
-                    {
-                        Console.WriteLine($"Skipping invalid line: {gateLines[i]}");
-                        continue;
-                    }
-
-                    if (!bool.TryParse(fields[1], out bool supportsCFFT)) supportsCFFT = false;
-                    if (!bool.TryParse(fields[2], out bool supportsDDJB)) supportsDDJB = false;
-                    if (!bool.TryParse(fields[3], out bool supportsLWTT)) supportsLWTT = false;
-
-                    string gateName = fields[0];
-
-                    if (!boardingGates.ContainsKey(gateName))
-                    {
-                        boardingGates[gateName] = new BoardingGate
-                        {
-                            GateName = gateName,
-                            SupportsCFFT = supportsCFFT,
-                            SupportsDDJB = supportsDDJB,
-                            SupportsLWTT = supportsLWTT
-                        };
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Boarding gates file not found.");
-            }
-
-            // Load flights from CSV
-            string flightsPath = "flights.csv";
             Dictionary<string, Flight> flights = new();
 
-            if (File.Exists(flightsPath))
-            {
-                Console.WriteLine("Loading flights...");
-                var lines = File.ReadAllLines(flightsPath);
+            // Load data from CSV files
+            LoadAirlines(airlines);
+            LoadBoardingGates(boardingGates);
+            LoadFlights(flights);
 
-                for (int i = 1; i < lines.Length; i++)
-                {
-                    string[] fields = lines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
-
-                    if (fields.Length < 5)
-                    {
-                        Console.WriteLine($"Skipping invalid line: {lines[i]}");
-                        continue;
-                    }
-
-                    if (!DateTime.TryParse(fields[3], out DateTime expectedTime))
-                    {
-                        Console.WriteLine($"Invalid date format for line: {lines[i]}");
-                        continue;
-                    }
-
-                    string flightNumber = fields[0];
-
-                    if (!flights.ContainsKey(flightNumber))
-                    {
-                        flights[flightNumber] = new Flight
-                        {
-                            FlightNumber = flightNumber,
-                            Origin = fields[1],
-                            Destination = fields[2],
-                            ExpectedTime = expectedTime,
-                            Status = fields[4]
-                        };
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Flights file not found.");
-            }
-
-            // Create Terminal object and call the new method
+            // Create Terminal object
             Terminal terminal = new Terminal(airlines, boardingGates, flights);
 
-            // Basic Feature 3: Assign Boarding Gates to Flights
-            terminal.AssignBoardingGate();
+            // Menu system in a while loop
+            while (true)
+            {
+                Console.Clear(); // Clear screen for better UI
+                Console.WriteLine("========== ✈️  Airport Terminal System  ✈️ ==========");
+                Console.WriteLine("1. Assign Boarding Gates to Flights");
+                Console.WriteLine("2. Create a New Flight");
+                Console.WriteLine("3. Display Scheduled Flights");
+                Console.WriteLine("4. Bulk Assign Unassigned Flights");
+                Console.WriteLine("5. Display Total Fees Per Airline");
+                Console.WriteLine("6. Reschedule a Flight");
+                Console.WriteLine("7. Exit");
+                Console.Write("Enter your choice: ");
 
-            // Basic Feature 6: Create a New Flight
-            terminal.CreateNewFlight(flights, flightsPath);
+                string input = Console.ReadLine();
 
-            // Basic Feature 9: Display scheduled flights in chronological order
-            terminal.DisplayScheduledFlights();
+                switch (input)
+                {
+                    case "1":
+                        terminal.AssignBoardingGate();
+                        break;
+                    case "2":
+                        terminal.CreateNewFlight(flights, "flights.csv");
+                        break;
+                    case "3":
+                        terminal.DisplayScheduledFlights();
+                        break;
+                    case "4":
+                        terminal.BulkAssignBoardingGates();
+                        break;
+                    case "5":
+                        terminal.DisplayTotalFeesPerAirline();
+                        break;
+                    case "6":
+                        terminal.RescheduleFlight();
+                        break;
+                    case "7":
+                        Console.WriteLine("Exiting program... ✈️");
+                        return; // Exit the program
+                    default:
+                        Console.WriteLine("⚠️ Invalid choice. Please enter a number between 1 and 7.");
+                        break;
+                }
 
-            // Advanced Feature 1: Process all unassigned flights to boarding gates in bulk
-            terminal.BulkAssignBoardingGates();
+                Console.Write("\nPress any key to continue...");
+                Console.ReadKey(); // Pause before displaying the menu again
+            }
+        }
 
-            // Advanced Feature 2: Display the total fee per airline for the day
-            terminal.DisplayTotalFeesPerAirline();
+        // Load Airlines from CSV**
+        static void LoadAirlines(Dictionary<string, Airline> airlines)
+        {
+            string path = "airlines.csv";
+            if (!File.Exists(path)) { Console.WriteLine("❌ Airlines file not found."); return; }
 
+            Console.WriteLine("📂 Loading airlines...");
+            var lines = File.ReadAllLines(path).Skip(1); // Skip header
+            foreach (var line in lines)
+            {
+                string[] fields = line.Split(',').Select(f => f.Trim('\"')).ToArray();
+                if (fields.Length < 2) continue;
 
+                string code = fields[0];
+                string name = fields[1];
 
+                airlines[code] = new Airline { Code = code, Name = name };
+            }
+        }
+
+        // Load Boarding Gates from CSV**
+        static void LoadBoardingGates(Dictionary<string, BoardingGate> boardingGates)
+        {
+            string path = "boardinggates.csv";
+            if (!File.Exists(path)) { Console.WriteLine("❌ Boarding gates file not found."); return; }
+
+            Console.WriteLine("📂 Loading boarding gates...");
+            var lines = File.ReadAllLines(path).Skip(1);
+            foreach (var line in lines)
+            {
+                string[] fields = line.Split(',').Select(f => f.Trim('\"')).ToArray();
+                if (fields.Length < 4) continue;
+
+                boardingGates[fields[0]] = new BoardingGate
+                {
+                    GateName = fields[0],
+                    SupportsCFFT = bool.TryParse(fields[1], out bool cfft) && cfft,
+                    SupportsDDJB = bool.TryParse(fields[2], out bool ddjb) && ddjb,
+                    SupportsLWTT = bool.TryParse(fields[3], out bool lwtt) && lwtt
+                };
+            }
+        }
+
+        // Load Flights from CSV**
+        static void LoadFlights(Dictionary<string, Flight> flights)
+        {
+            string path = "flights.csv";
+            if (!File.Exists(path)) { Console.WriteLine("❌ Flights file not found."); return; }
+
+            Console.WriteLine("📂 Loading flights...");
+            var lines = File.ReadAllLines(path).Skip(1);
+            foreach (var line in lines)
+            {
+                string[] fields = line.Split(',').Select(f => f.Trim('\"')).ToArray();
+                if (fields.Length < 5 || !DateTime.TryParse(fields[3], out DateTime expectedTime)) continue;
+
+                flights[fields[0]] = new Flight
+                {
+                    FlightNumber = fields[0],
+                    Origin = fields[1],
+                    Destination = fields[2],
+                    ExpectedTime = expectedTime,
+                    Status = fields[4]
+                };
+            }
         }
     }
 }

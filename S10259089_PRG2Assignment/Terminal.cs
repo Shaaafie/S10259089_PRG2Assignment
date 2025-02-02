@@ -387,11 +387,11 @@ namespace S10259089_PRG2Assignment
             // Step 5: Display final totals
             double discountPercentage = totalAirlineFees > 0 ? (totalAirlineDiscounts * 100 / totalAirlineFees) : 0;
 
-            Console.WriteLine("\n📈 **Summary of Terminal Fees for the Day:**");
-            Console.WriteLine($"   🔹 **Total Airline Fees:** ${totalAirlineFees}");
-            Console.WriteLine($"   🔹 **Total Discounts Applied:** -${totalAirlineDiscounts}");
-            Console.WriteLine($"   🔹 **Final Fees Collected by Terminal:** ${finalFeesCollected}");
-            Console.WriteLine($"   🔹 **Discount Percentage:** {discountPercentage:F2}%");
+            Console.WriteLine("\nSummary of Terminal Fees for the Day: ");
+            Console.WriteLine($"Total Airline Fees: ${totalAirlineFees}");
+            Console.WriteLine($"Total Discounts Applied: ${totalAirlineDiscounts}");
+            Console.WriteLine($"Final Fees Collected by Terminal: ${finalFeesCollected}");
+            Console.WriteLine($"Discount Percentage: {discountPercentage:F2}%");
         }
 
         // Additional Feature
