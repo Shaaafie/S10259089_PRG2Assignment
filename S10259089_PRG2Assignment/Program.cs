@@ -4,19 +4,23 @@
 // Partner Name : He Zhao Jin
 //==========================================================
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using S10259089_PRG2Assignment;
 
-namespace PRG2_assignment
+namespace S10259089_PRG2Assignment
 {
     class Program
     {
         static void Main(string[] args)
         {
-            // Basic Feature 1 (Dictionaries to store airlines and boarding gates)
-            Dictionary<string, Airline> airlines = new Dictionary<string, Airline>();
-            Dictionary<string, BoardingGate> boardingGates = new Dictionary<string, BoardingGate>();
+            // Basic Feature 1: Dictionaries to store airlines and boarding gates
+            Dictionary<string, Airline> airlines = new();
+            Dictionary<string, BoardingGate> boardingGates = new();
 
-            // Bsaic Feature 1 (Load airlines from CSV)
+            // Load airlines from CSV
             string airlinesPath = "airlines.csv";
             if (File.Exists(airlinesPath))
             {
@@ -25,27 +29,20 @@ namespace PRG2_assignment
 
                 for (int i = 1; i < airlineLines.Length; i++)
                 {
-                    string line = airlineLines[i];
-                    string[] fields = line.Split(',');
+                    string[] fields = airlineLines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
 
                     if (fields.Length < 2)
                     {
-                        Console.WriteLine($"Skipping invalid line: {line}");
+                        Console.WriteLine($"Skipping invalid line: {airlineLines[i]}");
                         continue;
                     }
 
                     string code = fields[0];
                     string name = fields[1];
 
-                    Airline airline = new Airline
-                    {
-                        Code = code,
-                        Name = name
-                    };
-
                     if (!airlines.ContainsKey(code))
                     {
-                        airlines.Add(code, airline);
+                        airlines[code] = new Airline { Code = code, Name = name };
                     }
                 }
                 Console.WriteLine($"Loaded {airlines.Count} airlines.");
@@ -55,7 +52,7 @@ namespace PRG2_assignment
                 Console.WriteLine("Airlines file not found.");
             }
 
-            // Basic Feature 1 (Load boarding gates from CSV)
+            // Load boarding gates from CSV
             string gatesPath = "boardinggates.csv";
             if (File.Exists(gatesPath))
             {
@@ -64,31 +61,29 @@ namespace PRG2_assignment
 
                 for (int i = 1; i < gateLines.Length; i++)
                 {
-                    string line = gateLines[i];
-                    string[] fields = line.Split(',');
+                    string[] fields = gateLines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
 
                     if (fields.Length < 4)
                     {
-                        Console.WriteLine($"Skipping invalid line: {line}");
+                        Console.WriteLine($"Skipping invalid line: {gateLines[i]}");
                         continue;
                     }
 
-                    string gateName = fields[0];
-                    bool supportsCFFT = bool.Parse(fields[1]);
-                    bool supportsDDJB = bool.Parse(fields[2]);
-                    bool supportsLWTT = bool.Parse(fields[3]);
+                    if (!bool.TryParse(fields[1], out bool supportsCFFT)) supportsCFFT = false;
+                    if (!bool.TryParse(fields[2], out bool supportsDDJB)) supportsDDJB = false;
+                    if (!bool.TryParse(fields[3], out bool supportsLWTT)) supportsLWTT = false;
 
-                    BoardingGate gate = new BoardingGate
-                    {
-                        GateName = gateName,
-                        SupportsCFFT = supportsCFFT,
-                        SupportsDDJB = supportsDDJB,
-                        SupportsLWTT = supportsLWTT
-                    };
+                    string gateName = fields[0];
 
                     if (!boardingGates.ContainsKey(gateName))
                     {
-                        boardingGates.Add(gateName, gate);
+                        boardingGates[gateName] = new BoardingGate
+                        {
+                            GateName = gateName,
+                            SupportsCFFT = supportsCFFT,
+                            SupportsDDJB = supportsDDJB,
+                            SupportsLWTT = supportsLWTT
+                        };
                     }
                 }
                 Console.WriteLine($"Loaded {boardingGates.Count} boarding gates.");
@@ -98,73 +93,60 @@ namespace PRG2_assignment
                 Console.WriteLine("Boarding gates file not found.");
             }
 
-            // Basic Feature 2 (Load files Flight)
-            string path = "flights.csv";
-            Dictionary<string, Flight> flights = new Dictionary<string, Flight>();
+            // Load flights from CSV
+            string flightsPath = "flights.csv";
+            Dictionary<string, Flight> flights = new();
 
-            if (File.Exists(path))
+            if (File.Exists(flightsPath))
             {
                 Console.WriteLine("Loading flights...");
-
-                var lines = File.ReadAllLines(path);
+                var lines = File.ReadAllLines(flightsPath);
 
                 for (int i = 1; i < lines.Length; i++)
                 {
-                    string line = lines[i];
-                    string[] fields = line.Split(',');
+                    string[] fields = lines[i].Split(',').Select(f => f.Trim('\"')).ToArray();
 
                     if (fields.Length < 5)
                     {
-                        Console.WriteLine($"Skipping invalid line: {line}");
+                        Console.WriteLine($"Skipping invalid line: {lines[i]}");
+                        continue;
+                    }
+
+                    if (!DateTime.TryParse(fields[3], out DateTime expectedTime))
+                    {
+                        Console.WriteLine($"Invalid date format for line: {lines[i]}");
                         continue;
                     }
 
                     string flightNumber = fields[0];
-                    string origin = fields[1];
-                    string destination = fields[2];
 
-                    if (!DateTime.TryParse(fields[3], out DateTime expectedTime))
+                    if (!flights.ContainsKey(flightNumber))
                     {
-                        Console.WriteLine($"Invalid date format for line: {line}");
-                        continue;
-                    }
-
-                    string status = fields[4];
-
-                    Flight flight = new Flight
-                    {
-                        FlightNumber = flightNumber,
-                        Origin = origin,
-                        Destination = destination,
-                        ExpectedTime = expectedTime,
-                        Status = status
-                    };
-
-                    if (!flights.ContainsKey(flight.FlightNumber))
-                    {
-                        flights.Add(flight.FlightNumber, flight);
+                        flights[flightNumber] = new Flight
+                        {
+                            FlightNumber = flightNumber,
+                            Origin = fields[1],
+                            Destination = fields[2],
+                            ExpectedTime = expectedTime,
+                            Status = fields[4]
+                        };
                     }
                 }
-
                 Console.WriteLine($"Successfully loaded {flights.Count} flights!");
             }
             else
             {
-                Console.WriteLine("The file doesn't exist.");
+                Console.WriteLine("Flights file not found.");
             }
 
-            //basic feature 3 (reference to Terminal.cs)
             // Create Terminal object and call the new method
             Terminal terminal = new Terminal(airlines, boardingGates, flights);
+
+            // Basic Feature 3: Assign Boarding Gates to Flights
             terminal.AssignBoardingGate();
 
-            //basic feature 5 (reference to Terminal.cs)
-            terminal.AssignBoardingGate();
-
-            //basic feature 6: create new flight
-            terminal.CreateNewFlight(flights, path);
+            // Basic Feature 6: Create a New Flight
+            terminal.CreateNewFlight(flights, flightsPath);
         }
-
     }
-
 }
