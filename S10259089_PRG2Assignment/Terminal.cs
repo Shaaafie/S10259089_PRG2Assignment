@@ -214,7 +214,44 @@ namespace S10259089_PRG2Assignment
                     break;
                 }
             }
+
+            
         }
+        // Feature 9: Display Scheduled Flights in Chronological Order
+        public void DisplayScheduledFlights()
+        {
+            // Sort the flights by ExpectedTime using IComparable implementation
+            var sortedFlights = Flights.Values.OrderBy(flight => flight).ToList();
+
+            Console.WriteLine("Scheduled Flights for Today:");
+
+            foreach (var flight in sortedFlights)
+            {
+                // Find the airline associated with the flight
+                var airline = GetAirlineFromFlight(flight);
+                string airlineName = airline != null ? airline.Name : "Unknown Airline";
+
+                // Check if the flight has an assigned boarding gate
+                string gateAssignment = "Not Assigned";
+                foreach (var gate in BoardingGates.Values)
+                {
+                    if (gate.Flight != null && gate.Flight.FlightNumber == flight.FlightNumber)
+                    {
+                        gateAssignment = gate.GateName;
+                        break;
+                    }
+                }
+
+                // Display the flight information along with airline name, special request code, and boarding gate assignment
+                Console.WriteLine($"Flight {flight.FlightNumber}: {airlineName}");
+                Console.WriteLine($"Origin: {flight.Origin}, Destination: {flight.Destination}");
+                Console.WriteLine($"Scheduled Time: {flight.ExpectedTime:yyyy-MM-dd HH:mm}");
+                Console.WriteLine($"Status: {flight.Status}");
+                Console.WriteLine($"Boarding Gate: {gateAssignment}");
+                Console.WriteLine();
+            }
+        }
+
 
         public override string ToString()
         {

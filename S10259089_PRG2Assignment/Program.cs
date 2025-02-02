@@ -147,6 +147,10 @@ namespace S10259089_PRG2Assignment
 
             // Basic Feature 6: Create a New Flight
             terminal.CreateNewFlight(flights, flightsPath);
+
+            // Baisc Feature 9: Display scheduled flights in chronological order
+            terminal.DisplayScheduledFlights();
+
         }
     }
 }
