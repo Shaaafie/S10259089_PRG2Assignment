@@ -323,6 +323,77 @@ namespace S10259089_PRG2Assignment
             Console.WriteLine($"Automatic Assignments: {autoAssignedCount}/{totalProcessed} ({(totalProcessed > 0 ? (autoAssignedCount * 100 / totalProcessed) : 0)}%)");
         }
 
+        // Advanced Feature 2
+        public void DisplayTotalFeesPerAirline()
+        {
+            // Step 1: Ensure all flights have assigned gates
+            var unassignedFlights = Flights.Values.Where(f => !FlightAssignments.ContainsKey(f.FlightNumber)).ToList();
+
+            if (unassignedFlights.Any())
+            {
+                Console.WriteLine("⚠️ Some flights are not assigned a boarding gate! Please assign all flights before calculating fees.");
+                return;
+            }
+
+            double totalAirlineFees = 0;
+            double totalAirlineDiscounts = 0;
+            double finalFeesCollected = 0;
+
+            Console.WriteLine("\n📊 **Total Fees Per Airline for the Day:**\n");
+
+            // Step 2: Process each airline
+            foreach (var airline in Airlines.Values)
+            {
+                double airlineSubtotal = 0;
+                double airlineDiscounts = 0;
+
+                Console.WriteLine($"🛫 {airline.Name} (Code: {airline.Code})");
+
+                // Step 3: Process each flight
+                foreach (var flight in airline.Flights.Values)
+                {
+                    double flightFee = 0;
+
+                    // ✅ Apply SIN fees
+                    if (flight.Origin == "SIN") flightFee += 800;
+                    if (flight.Destination == "SIN") flightFee += 500;
+
+                    // ✅ Apply Boarding Gate Base Fee
+                    flightFee += 300;
+
+                    // ✅ Apply Special Request Fees
+                    if (flight is DDJBFlight) flightFee += 300;
+                    if (flight is CFFTFlight) flightFee += 150;
+                    if (flight is LWTTFlight) flightFee += 500;
+
+                    // ✅ Calculate discounts for the flight
+                    double flightDiscount = airline.CalculateDiscounts(flight);
+
+                    airlineSubtotal += flightFee;
+                    airlineDiscounts += flightDiscount;
+
+                    Console.WriteLine($"   ✈ {flight.FlightNumber}: {flight.Origin} → {flight.Destination}, Base Fee: ${flightFee}, Discount: -${flightDiscount}");
+                }
+
+                // Step 4: Compute total airline fees
+                double finalAirlineFee = airlineSubtotal - airlineDiscounts;
+                Console.WriteLine($"   🔹 Subtotal: ${airlineSubtotal}, Discounts: -${airlineDiscounts}, **Final Fee: ${finalAirlineFee}**\n");
+
+                totalAirlineFees += airlineSubtotal;
+                totalAirlineDiscounts += airlineDiscounts;
+                finalFeesCollected += finalAirlineFee;
+            }
+
+            // Step 5: Display final totals
+            double discountPercentage = totalAirlineFees > 0 ? (totalAirlineDiscounts * 100 / totalAirlineFees) : 0;
+
+            Console.WriteLine("\n📈 **Summary of Terminal Fees for the Day:**");
+            Console.WriteLine($"   🔹 **Total Airline Fees:** ${totalAirlineFees}");
+            Console.WriteLine($"   🔹 **Total Discounts Applied:** -${totalAirlineDiscounts}");
+            Console.WriteLine($"   🔹 **Final Fees Collected by Terminal:** ${finalFeesCollected}");
+            Console.WriteLine($"   🔹 **Discount Percentage:** {discountPercentage:F2}%");
+        }
+
 
         public override string ToString()
         {
