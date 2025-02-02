@@ -90,7 +90,6 @@ namespace S10259089_PRG2Assignment
 
                         gate.Flight = flight;
                         FlightAssignments[flight.FlightNumber] = gate.GateName;  // ✅ Store in dictionary
-                        Console.WriteLine($"Assigned Flight {flight.FlightNumber} to Gate {gate.GateName}");
                         break;  // Stop once a gate is assigned
                     }
                 }
