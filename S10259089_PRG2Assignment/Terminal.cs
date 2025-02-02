@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,54 +67,18 @@ namespace S10259089_PRG2Assignment
         //feature 3 : Assign a boarding gate to a flight
         public void AssignBoardingGate()
         {
-            // Prompt for Flight Number
-            Console.Write("Enter Flight Number: ");
-            string flightNumber = Console.ReadLine();
-
-            // Check if Flight exists in the dictionary
-            if (!Flights.ContainsKey(flightNumber))
+            foreach (var flight in Flights.Values)
             {
-                Console.WriteLine("Flight not found. Please enter a valid Flight Number.");
-                return;
-            }
+                foreach (var gate in BoardingGates.Values)
+                {
+                    if (flight is CFFTFlight && !gate.SupportsCFFT) continue;
+                    if (flight is DDJBFlight && !gate.SupportsDDJB) continue;
+                    if (flight is LWTTFlight && !gate.SupportsLWTT) continue;
 
-            Flight flight = Flights[flightNumber]; // Retrieve Flight object
-            Console.WriteLine($"Selected Flight: {flight.FlightNumber}, Destination: {flight.Destination}");
-
-            // Prompt for Boarding Gate
-            Console.Write("Enter Boarding Gate: ");
-            string gateName = Console.ReadLine();
-
-            // Check if Boarding Gate exists
-            if (!BoardingGates.ContainsKey(gateName))
-            {
-                Console.WriteLine("Boarding Gate not found. Please enter a valid Gate.");
-                return;
-            }
-
-            BoardingGate gate = BoardingGates[gateName]; // Retrieve Boarding Gate object
-
-            // Check if the Gate is already assigned to another Flight
-            if (gate.Flight != null)
-            {
-                Console.WriteLine("This gate is already assigned to another flight. Please choose another gate.");
-                return;
-            }
-
-            // Assign the Flight to the Gate
-            gate.Flight = flight;
-            Console.WriteLine($"Successfully assigned {flight.FlightNumber} to gate {gate.GateName}!");
-
-            // Prompt to update Flight Status
-            Console.Write("Would you like to update the Flight Status? (Y/N): ");
-            string updateStatus = Console.ReadLine().Trim().ToUpper();
-
-            if (updateStatus == "Y")
-            {
-                Console.WriteLine("Enter new Status (Delayed/Boarding/On Time): ");
-                string status = Console.ReadLine();
-                flight.Status = status;
-                Console.WriteLine($"Flight {flight.FlightNumber} status updated to {flight.Status}.");
+                    gate.Flight = flight;
+                    Console.WriteLine($"Assigned {flight.FlightNumber} to gate {gate.GateName}");
+                    break;
+                }
             }
         }
 
@@ -121,61 +86,47 @@ namespace S10259089_PRG2Assignment
         public void AssignBoardingGate(Dictionary<string, Flight> flights, Dictionary<string, BoardingGate> boardingGates)
         {
 
-            Console.Write("Enter the flight number: ");
-            string flightNumber = Console.ReadLine().Trim();
+            Console.Write("Enter Flight Number: ");
+            string flightNumber = Console.ReadLine();
 
-        
-            if (!flights.ContainsKey(flightNumber))
+            Console.Write("Enter Origin: ");
+            string origin = Console.ReadLine();
+
+            Console.Write("Enter Destination: ");
+            string destination = Console.ReadLine();
+
+            Console.Write("Enter Expected DateTime (yyyy-MM-dd HH:mm): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime expectedTime))
             {
-                Console.WriteLine("Flight not found.");
+                Console.WriteLine("Invalid date format.");
                 return;
             }
 
+            Console.Write("Enter Status: ");
+            string status = Console.ReadLine();
 
-            Flight flight = flights[flightNumber];
-            Console.WriteLine($"Flight Details: {flight}");
-
-
-            Console.Write("Enter the boarding gate: ");
-            string gateName = Console.ReadLine().Trim();
-
-
-            if (!boardingGates.ContainsKey(gateName))
+            Flight newFlight = new Flight
             {
-                Console.WriteLine("Boarding gate not found.");
-                return;
-            }
+                FlightNumber = flightNumber,
+                Origin = origin,
+                Destination = destination,
+                ExpectedTime = expectedTime,
+                Status = status
+            };
 
-            BoardingGate gate = boardingGates[gateName];
-
-   
-            if (gate.Flight != null)
+            if (!flights.ContainsKey(newFlight.FlightNumber))
             {
-                Console.WriteLine("This boarding gate is already assigned to another flight.");
-                return;
-            }
+                flights.Add(newFlight.FlightNumber, newFlight);
+                Console.WriteLine($"Successfully added flight {flightNumber}!");
 
-            gate.Flight = flight;
-            Console.WriteLine($"Boarding gate {gateName} assigned to flight {flightNumber}.");
-
-
-            Console.Write("Do you want to update the flight status? (Y/N): ");
-            string updateStatus = Console.ReadLine().Trim().ToUpper();
-
-            if (updateStatus == "Y")
-            {
-                Console.Write("Enter the new status (Delayed, Boarding, On Time): ");
-                string newStatus = Console.ReadLine().Trim();
-                flight.Status = newStatus;
-                Console.WriteLine($"Flight status updated to {newStatus}.");
+                File.AppendAllText(path, $"{flightNumber},{origin},{destination},{expectedTime},{status}\n");
             }
             else
             {
-                flight.Status = "On Time"; 
+                Console.WriteLine("Flight number already exists.");
             }
-
-            Console.WriteLine("Boarding gate assignment completed successfully.");
         }
+    }
 
         //basic feature 6:create a new flight
         public void CreateNewFlight(Dictionary<string, Flight> flights, string flightsPath)
