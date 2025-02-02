@@ -250,6 +250,78 @@ namespace S10259089_PRG2Assignment
                 Console.WriteLine();
             }
         }
+        // Advanced feature 1
+        public void BulkAssignBoardingGates()
+        {
+            Queue<Flight> unassignedFlights = new Queue<Flight>();
+            HashSet<string> availableGates = new HashSet<string>();
+
+            // Step 1: Collect unassigned flights and available gates
+            foreach (var flight in Flights.Values)
+            {
+                if (!FlightAssignments.ContainsKey(flight.FlightNumber)) // No gate assigned
+                {
+                    unassignedFlights.Enqueue(flight);
+                }
+            }
+
+            foreach (var gate in BoardingGates.Values)
+            {
+                if (gate.Flight == null) // No flight assigned
+                {
+                    availableGates.Add(gate.GateName);
+                }
+            }
+
+            Console.WriteLine($"Total Unassigned Flights: {unassignedFlights.Count}");
+            Console.WriteLine($"Total Available Boarding Gates: {availableGates.Count}");
+
+            int autoAssignedCount = 0;
+            int totalProcessed = unassignedFlights.Count;
+
+            // Step 2: Process flight queue
+            while (unassignedFlights.Count > 0 && availableGates.Count > 0)
+            {
+                Flight flight = unassignedFlights.Dequeue(); // Get first unassigned flight
+                string assignedGate = null;
+
+                // Step 3: Find suitable boarding gate
+                foreach (var gate in BoardingGates.Values)
+                {
+                    if (gate.Flight == null) // Check if gate is available
+                    {
+                        // Match special request code if applicable
+                        bool matchesRequest = flight is CFFTFlight && gate.SupportsCFFT ||
+                                              flight is DDJBFlight && gate.SupportsDDJB ||
+                                              flight is LWTTFlight && gate.SupportsLWTT;
+
+                        // Assign gate based on flight type or general availability
+                        if (matchesRequest || !(flight is CFFTFlight || flight is DDJBFlight || flight is LWTTFlight))
+                        {
+                            assignedGate = gate.GateName;
+                            gate.Flight = flight;
+                            break;
+                        }
+                    }
+                }
+
+                // Step 4: Assign the gate if found
+                if (assignedGate != null)
+                {
+                    FlightAssignments[flight.FlightNumber] = assignedGate;
+                    availableGates.Remove(assignedGate); // Mark gate as used
+                    autoAssignedCount++;
+
+                    // Display assignment
+                    Console.WriteLine($"Assigned Flight {flight.FlightNumber} ({flight.Origin} → {flight.Destination}) to Gate {assignedGate}");
+                }
+            }
+
+            // Step 5: Display final processing summary
+            Console.WriteLine($"Total Flights Processed: {totalProcessed}");
+            Console.WriteLine($"Total Gates Processed: {BoardingGates.Count}");
+            Console.WriteLine($"Automatic Assignments: {autoAssignedCount}/{totalProcessed} ({(totalProcessed > 0 ? (autoAssignedCount * 100 / totalProcessed) : 0)}%)");
+        }
 
 
         public override string ToString()

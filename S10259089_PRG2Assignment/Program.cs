@@ -45,7 +45,6 @@ namespace S10259089_PRG2Assignment
                         airlines[code] = new Airline { Code = code, Name = name };
                     }
                 }
-                Console.WriteLine($"Loaded {airlines.Count} airlines.");
             }
             else
             {
@@ -86,7 +85,6 @@ namespace S10259089_PRG2Assignment
                         };
                     }
                 }
-                Console.WriteLine($"Loaded {boardingGates.Count} boarding gates.");
             }
             else
             {
@@ -132,7 +130,6 @@ namespace S10259089_PRG2Assignment
                         };
                     }
                 }
-                Console.WriteLine($"Successfully loaded {flights.Count} flights!");
             }
             else
             {
