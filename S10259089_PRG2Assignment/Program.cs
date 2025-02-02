@@ -155,11 +155,11 @@ namespace PRG2_assignment
 
             //basic feature 3 (reference to Terminal.cs)
             // Create Terminal object and call the new method
-            Terminal terminal = new Terminal();  
+            Terminal terminal = new Terminal(airlines, boardingGates, flights);
             terminal.AssignBoardingGate();
 
             //basic feature 5 (reference to Terminal.cs)
-            terminal.AssignBoardingGate(flights, boardingGates);
+            terminal.AssignBoardingGate();
 
             //basic feature 6: create new flight
             terminal.CreateNewFlight(flights, path);

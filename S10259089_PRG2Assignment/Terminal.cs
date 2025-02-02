@@ -7,9 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace S10259089_PRG2Assignment
 {
@@ -20,18 +17,27 @@ namespace S10259089_PRG2Assignment
         public Dictionary<string, Flight> Flights { get; set; } = new();
         public Dictionary<string, BoardingGate> BoardingGates { get; set; } = new();
         public Dictionary<string, double> GateFees { get; set; } = new();
+
+        public Terminal(Dictionary<string, Airline> airlines, Dictionary<string, BoardingGate> boardingGates, Dictionary<string, Flight> flights)
+        {
+            Airlines = airlines;
+            BoardingGates = boardingGates;
+            Flights = flights;
+        }
+
         public bool AddAirline(Airline airline)
         {
-            if (Airlines.ContainsKey(airline.Code))
+            if (!Airlines.ContainsKey(airline.Code))
             {
                 Airlines[airline.Code] = airline;
                 return true;
             }
             return false;
         }
+
         public bool AddBoardingGate(BoardingGate gate)
         {
-            if (BoardingGates.ContainsKey(gate.GateName))
+            if (!BoardingGates.ContainsKey(gate.GateName))
             {
                 BoardingGates[gate.GateName] = gate;
                 return true;
@@ -48,6 +54,7 @@ namespace S10259089_PRG2Assignment
             }
             return null;
         }
+
         public void PrintAirlineFees()
         {
             foreach (var airline in Airlines.Values)
@@ -64,7 +71,7 @@ namespace S10259089_PRG2Assignment
             }
         }
 
-        //feature 3 : Assign a boarding gate to a flight
+        // Feature 3: Assign a boarding gate to a flight
         public void AssignBoardingGate()
         {
             foreach (var flight in Flights.Values)
@@ -82,12 +89,17 @@ namespace S10259089_PRG2Assignment
             }
         }
 
-        //basic featue 5
-        public void AssignBoardingGate(Dictionary<string, Flight> flights, Dictionary<string, BoardingGate> boardingGates)
+        // Feature 5: Assign a flight manually
+        public void AssignFlightManually(Dictionary<string, Flight> flights, Dictionary<string, BoardingGate> boardingGates, string flightsPath)
         {
-
             Console.Write("Enter Flight Number: ");
             string flightNumber = Console.ReadLine();
+
+            if (flights.ContainsKey(flightNumber))
+            {
+                Console.WriteLine("Flight already exists.");
+                return;
+            }
 
             Console.Write("Enter Origin: ");
             string origin = Console.ReadLine();
@@ -114,30 +126,20 @@ namespace S10259089_PRG2Assignment
                 Status = status
             };
 
-            if (!flights.ContainsKey(newFlight.FlightNumber))
-            {
-                flights.Add(newFlight.FlightNumber, newFlight);
-                Console.WriteLine($"Successfully added flight {flightNumber}!");
+            flights[flightNumber] = newFlight;
+            Console.WriteLine($"Successfully added flight {flightNumber}!");
 
-                File.AppendAllText(path, $"{flightNumber},{origin},{destination},{expectedTime},{status}\n");
-            }
-            else
-            {
-                Console.WriteLine("Flight number already exists.");
-            }
+            File.AppendAllText(flightsPath, $"{flightNumber},{origin},{destination},{expectedTime},{status}\n");
         }
-    }
 
-        //basic feature 6:create a new flight
+        // Feature 6: Create a new flight
         public void CreateNewFlight(Dictionary<string, Flight> flights, string flightsPath)
         {
             while (true)
             {
-  
                 Console.Write("Enter flight number: ");
                 string flightNumber = Console.ReadLine().Trim();
 
-   
                 if (flights.ContainsKey(flightNumber))
                 {
                     Console.WriteLine("Flight already exists.");
@@ -157,7 +159,6 @@ namespace S10259089_PRG2Assignment
                     continue;
                 }
 
-      
                 Console.Write("Do you want to enter a special request code? (Y/N): ");
                 string addSpecialRequest = Console.ReadLine().Trim().ToUpper();
 
@@ -171,39 +172,31 @@ namespace S10259089_PRG2Assignment
                     switch (specialRequestCode)
                     {
                         case "DDJB":
-                            newFlight = new DDJBFlight { RequestFee = 300 }; 
+                            newFlight = new DDJBFlight { FlightNumber = flightNumber, Origin = origin, Destination = destination, ExpectedTime = expectedTime, Status = "On Time", RequestFee = 300 };
                             break;
                         case "CFFT":
-                            newFlight = new CFFTFlight { RequestFee = 150 };
+                            newFlight = new CFFTFlight { FlightNumber = flightNumber, Origin = origin, Destination = destination, ExpectedTime = expectedTime, Status = "On Time", RequestFee = 150 };
                             break;
                         case "LWTT":
-                            newFlight = new LWTTFlight { RequestFee = 500 }; 
+                            newFlight = new LWTTFlight { FlightNumber = flightNumber, Origin = origin, Destination = destination, ExpectedTime = expectedTime, Status = "On Time", RequestFee = 500 };
                             break;
                         default:
                             Console.WriteLine("Invalid special request code. Creating a normal flight.");
-                            newFlight = new NORMFlight();
+                            newFlight = new NORMFlight { FlightNumber = flightNumber, Origin = origin, Destination = destination, ExpectedTime = expectedTime, Status = "On Time" };
                             break;
                     }
                 }
                 else
                 {
-                    newFlight = new NORMFlight();
+                    newFlight = new NORMFlight { FlightNumber = flightNumber, Origin = origin, Destination = destination, ExpectedTime = expectedTime, Status = "On Time" };
                 }
 
-           
-                newFlight.FlightNumber = flightNumber;
-                newFlight.Origin = origin;
-                newFlight.Destination = destination;
-                newFlight.ExpectedTime = expectedTime;
-                newFlight.Status = "On Time"; 
-
-                flights.Add(flightNumber, newFlight);
+                flights[flightNumber] = newFlight;
 
                 string newFlightLine = $"{flightNumber},{origin},{destination},{expectedTime:yyyy-MM-dd HH:mm},{newFlight.Status}";
                 File.AppendAllText(flightsPath, Environment.NewLine + newFlightLine);
 
                 Console.WriteLine("New flight created and added successfully.");
-
 
                 Console.Write("Do you want to add another flight? (Y/N): ");
                 string addAnother = Console.ReadLine().Trim().ToUpper();
@@ -215,15 +208,14 @@ namespace S10259089_PRG2Assignment
             }
         }
 
-
-
         public override string ToString()
         {
-            return "Terminal: " + TerminalName +
-                "Airlines: " + Airlines +
-                "Flights: " + Flights +
-                "BoardingGates: " + BoardingGates +
-                "GateFees: " + GateFees;
+            return $"Terminal: {TerminalName}\n" +
+                   $"Airlines: {string.Join(", ", Airlines.Values.Select(a => a.Name))}\n" +
+                   $"Flights: {string.Join(", ", Flights.Values.Select(f => f.FlightNumber))}\n" +
+                   $"BoardingGates: {string.Join(", ", BoardingGates.Values.Select(g => g.GateName))}\n" +
+                   $"GateFees: {string.Join(", ", GateFees.Select(g => $"{g.Key}: {g.Value:C}"))}";
         }
     }
 }
+
