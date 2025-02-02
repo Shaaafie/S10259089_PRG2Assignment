@@ -18,6 +18,9 @@ namespace S10259089_PRG2Assignment
         public Dictionary<string, BoardingGate> BoardingGates { get; set; } = new();
         public Dictionary<string, double> GateFees { get; set; } = new();
 
+        // New Dictionary to track flight assignments
+        public Dictionary<string, string> FlightAssignments { get; set; } = new();
+
         public Terminal(Dictionary<string, Airline> airlines, Dictionary<string, BoardingGate> boardingGates, Dictionary<string, Flight> flights)
         {
             Airlines = airlines;
@@ -78,13 +81,18 @@ namespace S10259089_PRG2Assignment
             {
                 foreach (var gate in BoardingGates.Values)
                 {
-                    if (flight is CFFTFlight && !gate.SupportsCFFT) continue;
-                    if (flight is DDJBFlight && !gate.SupportsDDJB) continue;
-                    if (flight is LWTTFlight && !gate.SupportsLWTT) continue;
+                    if (gate.Flight == null)  // Only assign an empty gate
+                    {
+                        // Ensure the gate supports the flight type
+                        if (flight is CFFTFlight && !gate.SupportsCFFT) continue;
+                        if (flight is DDJBFlight && !gate.SupportsDDJB) continue;
+                        if (flight is LWTTFlight && !gate.SupportsLWTT) continue;
 
-                    gate.Flight = flight;
-                    Console.WriteLine($"Assigned {flight.FlightNumber} to gate {gate.GateName}");
-                    break;
+                        gate.Flight = flight;
+                        FlightAssignments[flight.FlightNumber] = gate.GateName;  // ✅ Store in dictionary
+                        Console.WriteLine($"Assigned Flight {flight.FlightNumber} to Gate {gate.GateName}");
+                        break;  // Stop once a gate is assigned
+                    }
                 }
             }
         }
