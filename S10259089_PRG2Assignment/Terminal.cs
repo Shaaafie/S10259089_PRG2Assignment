@@ -180,48 +180,90 @@ namespace S10259089_PRG2Assignment
         //basic feature 6:create a new flight
         public void CreateNewFlight(Dictionary<string, Flight> flights, string flightsPath)
         {
+            while (true)
+            {
   
-            Console.Write("Enter flight number: ");
-            string flightNumber = Console.ReadLine().Trim();
+                Console.Write("Enter flight number: ");
+                string flightNumber = Console.ReadLine().Trim();
+
+   
+                if (flights.ContainsKey(flightNumber))
+                {
+                    Console.WriteLine("Flight already exists.");
+                    continue;
+                }
+
+                Console.Write("Enter origin: ");
+                string origin = Console.ReadLine().Trim();
+
+                Console.Write("Enter destination: ");
+                string destination = Console.ReadLine().Trim();
+
+                Console.Write("Enter expected departure/arrival time (yyyy-MM-dd HH:mm): ");
+                if (!DateTime.TryParse(Console.ReadLine(), out DateTime expectedTime))
+                {
+                    Console.WriteLine("Invalid date format.");
+                    continue;
+                }
+
+      
+                Console.Write("Do you want to enter a special request code? (Y/N): ");
+                string addSpecialRequest = Console.ReadLine().Trim().ToUpper();
+
+                Flight newFlight;
+
+                if (addSpecialRequest == "Y")
+                {
+                    Console.Write("Enter special request code (DDJB, CFFT, LWTT): ");
+                    string specialRequestCode = Console.ReadLine().Trim().ToUpper();
+
+                    switch (specialRequestCode)
+                    {
+                        case "DDJB":
+                            newFlight = new DDJBFlight { RequestFee = 300 }; 
+                            break;
+                        case "CFFT":
+                            newFlight = new CFFTFlight { RequestFee = 150 };
+                            break;
+                        case "LWTT":
+                            newFlight = new LWTTFlight { RequestFee = 500 }; 
+                            break;
+                        default:
+                            Console.WriteLine("Invalid special request code. Creating a normal flight.");
+                            newFlight = new NORMFlight();
+                            break;
+                    }
+                }
+                else
+                {
+                    newFlight = new NORMFlight();
+                }
+
+           
+                newFlight.FlightNumber = flightNumber;
+                newFlight.Origin = origin;
+                newFlight.Destination = destination;
+                newFlight.ExpectedTime = expectedTime;
+                newFlight.Status = "On Time"; 
+
+                flights.Add(flightNumber, newFlight);
+
+                string newFlightLine = $"{flightNumber},{origin},{destination},{expectedTime:yyyy-MM-dd HH:mm},{newFlight.Status}";
+                File.AppendAllText(flightsPath, Environment.NewLine + newFlightLine);
+
+                Console.WriteLine("New flight created and added successfully.");
 
 
-            if (flights.ContainsKey(flightNumber))
-            {
-                Console.WriteLine("Flight already exists.");
-                return;
+                Console.Write("Do you want to add another flight? (Y/N): ");
+                string addAnother = Console.ReadLine().Trim().ToUpper();
+
+                if (addAnother != "Y")
+                {
+                    break;
+                }
             }
-
-            Console.Write("Enter origin: ");
-            string origin = Console.ReadLine().Trim();
-
-            Console.Write("Enter destination: ");
-            string destination = Console.ReadLine().Trim();
-
-            Console.Write("Enter expected departure/arrival time (yyyy-MM-dd HH:mm): ");
-            if (!DateTime.TryParse(Console.ReadLine(), out DateTime expectedTime))
-            {
-                Console.WriteLine("Invalid date format.");
-                return;
-            }
-
-
-            Flight newFlight = new Flight
-            {
-                FlightNumber = flightNumber,
-                Origin = origin,
-                Destination = destination,
-                ExpectedTime = expectedTime,
-                Status = "On Time" 
-            };
-
-            flights.Add(flightNumber, newFlight);
-
- 
-            string newFlightLine = $"{flightNumber},{origin},{destination},{expectedTime:yyyy-MM-dd HH:mm},{newFlight.Status}";
-            File.AppendAllText(flightsPath, Environment.NewLine + newFlightLine);
-
-            Console.WriteLine("New flight created and added successfully.");
         }
+
 
 
         public override string ToString()
