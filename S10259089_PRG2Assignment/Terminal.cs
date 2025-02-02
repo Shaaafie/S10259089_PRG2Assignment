@@ -394,6 +394,74 @@ namespace S10259089_PRG2Assignment
             Console.WriteLine($"   🔹 **Discount Percentage:** {discountPercentage:F2}%");
         }
 
+        // Additional Feature
+        public void RescheduleFlight()
+        {
+            Console.Write("\nEnter Flight Number to Reschedule: ");
+            string flightNumber = Console.ReadLine().Trim();
+
+            if (!Flights.ContainsKey(flightNumber))
+            {
+                Console.WriteLine("⚠️ Flight not found!");
+                return;
+            }
+
+            Flight flight = Flights[flightNumber];
+
+            Console.Write("Enter New Expected DateTime (yyyy-MM-dd HH:mm): ");
+            if (!DateTime.TryParse(Console.ReadLine(), out DateTime newTime))
+            {
+                Console.WriteLine("⚠️ Invalid date format. Please try again.");
+                return;
+            }
+
+            Console.WriteLine($"🔄 Rescheduling Flight {flight.FlightNumber} to {newTime}...");
+
+            // Check if the flight already has an assigned gate
+            if (FlightAssignments.ContainsKey(flightNumber))
+            {
+                string currentGate = FlightAssignments[flightNumber];
+                BoardingGate gate = BoardingGates[currentGate];
+
+                // If the gate is occupied at the new time, reassign
+                if (gate.Flight != null && gate.Flight != flight)
+                {
+                    Console.WriteLine($"⚠️ Gate {currentGate} is occupied at the new time. Searching for another gate...");
+                    AssignBoardingGateForReschedule(flight, newTime);
+                }
+                else
+                {
+                    // Update flight time
+                    flight.ExpectedTime = newTime;
+                    Console.WriteLine($"✅ Flight {flight.FlightNumber} successfully rescheduled to {newTime} at Gate {currentGate}.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"⚠️ Flight {flight.FlightNumber} has no assigned gate. Assigning a new gate...");
+                AssignBoardingGateForReschedule(flight, newTime);
+            }
+        }
+
+        private void AssignBoardingGateForReschedule(Flight flight, DateTime newTime)
+        {
+            foreach (var gate in BoardingGates.Values)
+            {
+                if (gate.Flight == null) // Check if the gate is empty
+                {
+                    // Assign the flight to the gate
+                    gate.Flight = flight;
+                    FlightAssignments[flight.FlightNumber] = gate.GateName;
+                    flight.ExpectedTime = newTime;
+
+                    Console.WriteLine($"✅ Flight {flight.FlightNumber} assigned to Gate {gate.GateName} at {newTime}.");
+                    return;
+                }
+            }
+
+            Console.WriteLine($"⚠️ No available gates. Flight {flight.FlightNumber} is put on hold.");
+        }
+
 
         public override string ToString()
         {
