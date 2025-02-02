@@ -32,8 +32,8 @@ namespace S10259089_PRG2Assignment
             // Menu system in a while loop
             while (true)
             {
-                Console.Clear(); // Clear screen for better UI
-                Console.WriteLine("========== ✈️  Airport Terminal System  ✈️ ==========");
+                Console.Clear(); 
+                Console.WriteLine("==========  Airport Terminal System  ==========");
                 Console.WriteLine("1. Assign Boarding Gates to Flights");
                 Console.WriteLine("2. Create a New Flight");
                 Console.WriteLine("3. Display Scheduled Flights");
@@ -66,10 +66,10 @@ namespace S10259089_PRG2Assignment
                         terminal.RescheduleFlight();
                         break;
                     case "7":
-                        Console.WriteLine("Exiting program... ✈️");
-                        return; // Exit the program
+                        Console.WriteLine("Exiting program...");
+                        return; 
                     default:
-                        Console.WriteLine("⚠️ Invalid choice. Please enter a number between 1 and 7.");
+                        Console.WriteLine(" Invalid choice. Please enter a number between 1 and 7.");
                         break;
                 }
 
@@ -82,9 +82,9 @@ namespace S10259089_PRG2Assignment
         static void LoadAirlines(Dictionary<string, Airline> airlines)
         {
             string path = "airlines.csv";
-            if (!File.Exists(path)) { Console.WriteLine("❌ Airlines file not found."); return; }
+            if (!File.Exists(path)) { Console.WriteLine("Airlines file not found."); return; }
 
-            Console.WriteLine("📂 Loading airlines...");
+            Console.WriteLine("Loading airlines...");
             var lines = File.ReadAllLines(path).Skip(1); // Skip header
             foreach (var line in lines)
             {
@@ -102,9 +102,9 @@ namespace S10259089_PRG2Assignment
         static void LoadBoardingGates(Dictionary<string, BoardingGate> boardingGates)
         {
             string path = "boardinggates.csv";
-            if (!File.Exists(path)) { Console.WriteLine("❌ Boarding gates file not found."); return; }
+            if (!File.Exists(path)) { Console.WriteLine("Boarding gates file not found."); return; }
 
-            Console.WriteLine("📂 Loading boarding gates...");
+            Console.WriteLine("Loading boarding gates...");
             var lines = File.ReadAllLines(path).Skip(1);
             foreach (var line in lines)
             {
@@ -125,9 +125,9 @@ namespace S10259089_PRG2Assignment
         static void LoadFlights(Dictionary<string, Flight> flights)
         {
             string path = "flights.csv";
-            if (!File.Exists(path)) { Console.WriteLine("❌ Flights file not found."); return; }
+            if (!File.Exists(path)) { Console.WriteLine("Flights file not found."); return; }
 
-            Console.WriteLine("📂 Loading flights...");
+            Console.WriteLine("Loading flights...");
             var lines = File.ReadAllLines(path).Skip(1);
             foreach (var line in lines)
             {

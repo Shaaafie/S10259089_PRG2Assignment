@@ -89,7 +89,7 @@ namespace S10259089_PRG2Assignment
                         if (flight is LWTTFlight && !gate.SupportsLWTT) continue;
 
                         gate.Flight = flight;
-                        FlightAssignments[flight.FlightNumber] = gate.GateName;  // ✅ Store in dictionary
+                        FlightAssignments[flight.FlightNumber] = gate.GateName;  // store in dictionary
                         break;  // Stop once a gate is assigned
                     }
                 }
@@ -331,7 +331,7 @@ namespace S10259089_PRG2Assignment
 
             if (unassignedFlights.Any())
             {
-                Console.WriteLine("⚠️ Some flights are not assigned a boarding gate! Please assign all flights before calculating fees.");
+                Console.WriteLine(" Some flights are not assigned a boarding gate! Please assign all flights before calculating fees.");
                 return;
             }
 
@@ -339,7 +339,7 @@ namespace S10259089_PRG2Assignment
             double totalAirlineDiscounts = 0;
             double finalFeesCollected = 0;
 
-            Console.WriteLine("\n📊 **Total Fees Per Airline for the Day:**\n");
+            Console.WriteLine("\n **Total Fees Per Airline for the Day:**\n");
 
             // Step 2: Process each airline
             foreach (var airline in Airlines.Values)
@@ -347,21 +347,21 @@ namespace S10259089_PRG2Assignment
                 double airlineSubtotal = 0;
                 double airlineDiscounts = 0;
 
-                Console.WriteLine($"🛫 {airline.Name} (Code: {airline.Code})");
+                Console.WriteLine($" {airline.Name} (Code: {airline.Code})");
 
                 // Step 3: Process each flight
                 foreach (var flight in airline.Flights.Values)
                 {
                     double flightFee = 0;
 
-                    // ✅ Apply SIN fees
+                    // Apply SIN fees
                     if (flight.Origin == "SIN") flightFee += 800;
                     if (flight.Destination == "SIN") flightFee += 500;
 
-                    // ✅ Apply Boarding Gate Base Fee
+                    //  Apply Boarding Gate Base Fee
                     flightFee += 300;
 
-                    // ✅ Apply Special Request Fees
+                    //  Apply Special Request Fees
                     if (flight is DDJBFlight) flightFee += 300;
                     if (flight is CFFTFlight) flightFee += 150;
                     if (flight is LWTTFlight) flightFee += 500;
@@ -377,7 +377,7 @@ namespace S10259089_PRG2Assignment
 
                 // Step 4: Compute total airline fees
                 double finalAirlineFee = airlineSubtotal - airlineDiscounts;
-                Console.WriteLine($"   🔹 Subtotal: ${airlineSubtotal}, Discounts: -${airlineDiscounts}, **Final Fee: ${finalAirlineFee}**\n");
+                Console.WriteLine($" Subtotal: ${airlineSubtotal}, Discounts: -${airlineDiscounts}, **Final Fee: ${finalAirlineFee}**\n");
 
                 totalAirlineFees += airlineSubtotal;
                 totalAirlineDiscounts += airlineDiscounts;
@@ -402,7 +402,7 @@ namespace S10259089_PRG2Assignment
 
             if (!Flights.ContainsKey(flightNumber))
             {
-                Console.WriteLine("⚠️ Flight not found!");
+                Console.WriteLine("Flight not found!");
                 return;
             }
 
@@ -411,11 +411,11 @@ namespace S10259089_PRG2Assignment
             Console.Write("Enter New Expected DateTime (yyyy-MM-dd HH:mm): ");
             if (!DateTime.TryParse(Console.ReadLine(), out DateTime newTime))
             {
-                Console.WriteLine("⚠️ Invalid date format. Please try again.");
+                Console.WriteLine(" Invalid date format. Please try again.");
                 return;
             }
 
-            Console.WriteLine($"🔄 Rescheduling Flight {flight.FlightNumber} to {newTime}...");
+            Console.WriteLine($"Rescheduling Flight {flight.FlightNumber} to {newTime}...");
 
             // Check if the flight already has an assigned gate
             if (FlightAssignments.ContainsKey(flightNumber))
@@ -426,19 +426,19 @@ namespace S10259089_PRG2Assignment
                 // If the gate is occupied at the new time, reassign
                 if (gate.Flight != null && gate.Flight != flight)
                 {
-                    Console.WriteLine($"⚠️ Gate {currentGate} is occupied at the new time. Searching for another gate...");
+                    Console.WriteLine($"Gate {currentGate} is occupied at the new time. Searching for another gate...");
                     AssignBoardingGateForReschedule(flight, newTime);
                 }
                 else
                 {
                     // Update flight time
                     flight.ExpectedTime = newTime;
-                    Console.WriteLine($"✅ Flight {flight.FlightNumber} successfully rescheduled to {newTime} at Gate {currentGate}.");
+                    Console.WriteLine($"Flight {flight.FlightNumber} successfully rescheduled to {newTime} at Gate {currentGate}.");
                 }
             }
             else
             {
-                Console.WriteLine($"⚠️ Flight {flight.FlightNumber} has no assigned gate. Assigning a new gate...");
+                Console.WriteLine($"Flight {flight.FlightNumber} has no assigned gate. Assigning a new gate...");
                 AssignBoardingGateForReschedule(flight, newTime);
             }
         }
@@ -454,12 +454,12 @@ namespace S10259089_PRG2Assignment
                     FlightAssignments[flight.FlightNumber] = gate.GateName;
                     flight.ExpectedTime = newTime;
 
-                    Console.WriteLine($"✅ Flight {flight.FlightNumber} assigned to Gate {gate.GateName} at {newTime}.");
+                    Console.WriteLine($"Flight {flight.FlightNumber} assigned to Gate {gate.GateName} at {newTime}.");
                     return;
                 }
             }
 
-            Console.WriteLine($"⚠️ No available gates. Flight {flight.FlightNumber} is put on hold.");
+            Console.WriteLine($"No available gates. Flight {flight.FlightNumber} is put on hold.");
         }
 
 
