@@ -32,6 +32,28 @@ namespace S10259089_PRG2Assignment
             }
             return fee;
         }
+
+        //basic feature 9 :implementing IComparable
+        public class FlightInformationDisplay : IComparable<Flight>
+        {
+            public string FlightNumber { get; set; }
+            public string Origin { get; set; }
+            public string Destination { get; set; }
+            public DateTime ExpectedTime { get; set; }
+            public string Status { get; set; }
+
+            public int CompareTo(Flight other)
+            {
+                return this.ExpectedTime.CompareTo(other.ExpectedTime);
+            }
+
+
+            public override string ToString()
+            {
+                return $"[{ExpectedTime:yyyy-MM-dd HH:mm}] {FlightNumber}: {Origin} → {Destination} | Status: {Status}";
+            }
+        }
+
         public override string ToString()
         {
             return "FlightNumber: " + FlightNumber +
