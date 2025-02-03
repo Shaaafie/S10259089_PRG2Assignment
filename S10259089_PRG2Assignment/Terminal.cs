@@ -255,6 +255,7 @@ namespace S10259089_PRG2Assignment
         {
             Queue<Flight> unassignedFlights = new Queue<Flight>();
             HashSet<string> availableGates = new HashSet<string>();
+            List<string> assignmentDetails = new List<string>(); // Store assignments
 
             // Step 1: Collect unassigned flights and available gates
             foreach (var flight in Flights.Values)
@@ -312,8 +313,8 @@ namespace S10259089_PRG2Assignment
                     availableGates.Remove(assignedGate); // Mark gate as used
                     autoAssignedCount++;
 
-                    // Display assignment
-                    Console.WriteLine($"Assigned Flight {flight.FlightNumber} ({flight.Origin} → {flight.Destination}) to Gate {assignedGate}");
+                    // Store the assignment detail instead of printing
+                    assignmentDetails.Add($"Assigned Flight {flight.FlightNumber} ({flight.Origin} to {flight.Destination}) to Gate {assignedGate}");
                 }
             }
 
@@ -321,6 +322,12 @@ namespace S10259089_PRG2Assignment
             Console.WriteLine($"Total Flights Processed: {totalProcessed}");
             Console.WriteLine($"Total Gates Processed: {BoardingGates.Count}");
             Console.WriteLine($"Automatic Assignments: {autoAssignedCount}/{totalProcessed} ({(totalProcessed > 0 ? (autoAssignedCount * 100 / totalProcessed) : 0)}%)");
+
+            // Step 6: Print all assignments at once
+            foreach (var assignment in assignmentDetails)
+            {
+                Console.WriteLine(assignment);
+            }
         }
 
         // Advanced Feature 2
@@ -331,7 +338,7 @@ namespace S10259089_PRG2Assignment
 
             if (unassignedFlights.Any())
             {
-                Console.WriteLine(" Some flights are not assigned a boarding gate! Please assign all flights before calculating fees.");
+                Console.WriteLine("Some flights are not assigned a boarding gate! Please assign all flights before calculating fees.");
                 return;
             }
 
@@ -339,7 +346,7 @@ namespace S10259089_PRG2Assignment
             double totalAirlineDiscounts = 0;
             double finalFeesCollected = 0;
 
-            Console.WriteLine("\n **Total Fees Per Airline for the Day:**\n");
+            Console.WriteLine("\n**Total Fees Per Airline for the Day:**\n");
 
             // Step 2: Process each airline
             foreach (var airline in Airlines.Values)
@@ -366,13 +373,13 @@ namespace S10259089_PRG2Assignment
                     if (flight is CFFTFlight) flightFee += 150;
                     if (flight is LWTTFlight) flightFee += 500;
 
-                    // ✅ Calculate discounts for the flight
+                    // Calculate discounts for the flight
                     double flightDiscount = airline.CalculateDiscounts(flight);
 
                     airlineSubtotal += flightFee;
                     airlineDiscounts += flightDiscount;
 
-                    Console.WriteLine($"   ✈ {flight.FlightNumber}: {flight.Origin} → {flight.Destination}, Base Fee: ${flightFee}, Discount: -${flightDiscount}");
+                    Console.WriteLine($"{flight.FlightNumber}: {flight.Origin} → {flight.Destination}, Base Fee: ${flightFee}, Discount: -${flightDiscount}");
                 }
 
                 // Step 4: Compute total airline fees
@@ -473,4 +480,3 @@ namespace S10259089_PRG2Assignment
         }
     }
 }
-

@@ -73,10 +73,6 @@ namespace S10259089_PRG2Assignment
                         break;
                     case "7":
                         Console.WriteLine("Exiting program...");
-
-                        return; 
-
-
                         return; // Exit the program
 
                     default:
