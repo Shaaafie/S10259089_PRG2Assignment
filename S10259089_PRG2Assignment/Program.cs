@@ -5,6 +5,7 @@
 //==========================================================
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,8 +33,11 @@ namespace S10259089_PRG2Assignment
             // Menu system in a while loop
             while (true)
             {
-                Console.Clear(); 
-                Console.WriteLine("==========  Airport Terminal System  ==========");
+
+
+                Console.Clear();
+                Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================");
+
                 Console.WriteLine("1. Assign Boarding Gates to Flights");
                 Console.WriteLine("2. Create a New Flight");
                 Console.WriteLine("3. Display Scheduled Flights");
@@ -51,7 +55,7 @@ namespace S10259089_PRG2Assignment
                         terminal.AssignBoardingGate();
                         break;
                     case "2":
-                        terminal.CreateNewFlight(flights, "flights.csv");
+                        Console.WriteLine("=============================================\r\nList of Boarding Gates for Changi Airport Terminal 5\r\n =============================================");
                         break;
                     case "3":
                         terminal.DisplayScheduledFlights();
@@ -67,7 +71,11 @@ namespace S10259089_PRG2Assignment
                         break;
                     case "7":
                         Console.WriteLine("Exiting program...");
+
                         return; 
+
+                        return; // Exit the program
+
                     default:
                         Console.WriteLine(" Invalid choice. Please enter a number between 1 and 7.");
                         break;
