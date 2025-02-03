@@ -35,9 +35,11 @@ namespace S10259089_PRG2Assignment
             {
 
 
+
                 Console.Clear();
                 Console.WriteLine("=============================================\r\nWelcome to Changi Airport Terminal 5\r\n=============================================");
-
+                Console.Clear(); // Clear screen for better UI
+                Console.WriteLine("========== Airport Terminal System ==========");
                 Console.WriteLine("1. Assign Boarding Gates to Flights");
                 Console.WriteLine("2. Create a New Flight");
                 Console.WriteLine("3. Display Scheduled Flights");
@@ -73,6 +75,7 @@ namespace S10259089_PRG2Assignment
                         Console.WriteLine("Exiting program...");
 
                         return; 
+
 
                         return; // Exit the program
 
